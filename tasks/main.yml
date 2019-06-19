@@ -1,0 +1,25 @@
+---
+- name: Create temporary directory to store related files
+  tempfile:
+    state: directory
+    suffix: fluentd
+  register: fluentd_temp_dir
+  when: "inventory_hostname == groups['integr8-docker-swarm-manager'][0]"
+
+- name: Interpolate Ansible variables
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ fluentd_temp_dir.path }}/docker-compose.yml"
+  when: "inventory_hostname == groups['integr8-docker-swarm-manager'][0]"
+
+- name: Deploy fluentd in Swarm
+  command: 'docker stack deploy --compose-file {{ fluentd_temp_dir.path }}/docker-compose.yml fluentd'
+  when: "inventory_hostname == groups['integr8-docker-swarm-manager'][0]"
+
+# - name: Record Traefik DNS
+#   ara_record:
+#     key: "fluentd_host"
+#     value: "http://{{ fluentd_host }}"
+#     type: url
+#   tags:
+#     - skip_ansible_lint

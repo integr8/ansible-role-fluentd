@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+  fluentd:
+      image: "{{ fluentd_docker_image }}"
+      networks:
+        - integr8
+      ports:
+        - 9880
+        - 24224:24224
+        - 24224:24224/udp
+      deploy:
+        labels:
+          - traefik.enable=true
+          - traefik.backend=fluentd
+          - traefik.frontend.rule=Host:{{ fluentd_host }}
+          - traefik.port=9880
+          - traefik.docker.network=integr8
+        mode: global
+        placement:
+          constraints:
+            - node.role == worker
+networks:
+  integr8:
+    external: true
+    name: integr8

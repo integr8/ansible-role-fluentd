@@ -1,0 +1,3 @@
+---
+fluentd_docker_image: "fluent/fluentd:v1.4.2-2.0"
+fluentd_host: "fluentd.integr8.me"
